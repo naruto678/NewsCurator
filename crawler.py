@@ -55,7 +55,7 @@ class Crawler:
 
   
   
-  def __call__(self,keyword,depth=1,starting_url=''):
+  def __call__(self,keyword='',depth=1,starting_url=''):
     '''
     This should first get all the links from google. 
     For each item in that list crawl that website to a specific depth 
@@ -77,4 +77,3 @@ if __name__=='__main__':
   logging.basicConfig(logging.DEBUG)
   crawler=Crawler()
   crawler(starting_url="https://www.indiatoday.in/")
-  
