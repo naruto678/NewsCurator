@@ -15,6 +15,7 @@ class Crawler:
     self.results_no=num
     self.make_http=lambda x,y: y if y.startswith('http') or y.startswith('https') else x+'/'+y
     self.filter_text=lambda x:'wiki' not in x.lower() and 'youtube' not in x.lower()
+    self.is_http=lambda x: x.lower().startswith('http') or x.lower().startswith('https')
   def get_search_links(self,keyword=''):
     if(len(keyword)==0):
       raise Exception('Search keyword cannot be empty')
@@ -28,8 +29,8 @@ class Crawler:
     if depth==0:
       return 
     info,embedded_links=self.extract_info(link) # Both of this are generators
-    logging.debug('\n'.join(line for line in info if len(line)>1))
-    logging.debug('\n'.join(line for line in embedded_links))
+    print('\n'.join(line for line in info if len(line)>1))
+    
     self.visited_links.add(link)
     for _link in filter(self.filter_text,embedded_links):
       if _link not in self.visited_links:
@@ -54,22 +55,26 @@ class Crawler:
 
   
   
-  def __call__(self,keyword,depth=1):
+  def __call__(self,keyword,depth=1,starting_url=''):
     '''
     This should first get all the links from google. 
     For each item in that list crawl that website to a specific depth 
     A depth of 2 would mean a dfs of level 2 
 
     '''
-    self.starting_url=filter(self.filter_text,self.get_search_links(keyword))
-    for i,link in enumerate(self.starting_url):
-      print('Currently crawling {0}->{1}'.format(i,link))
-      self._crawl(link,depth)
-      
+    if len(starting_url)<0:
+
+      self.starting_url=filter(self.filter_text,self.get_search_links(keyword))
+      for i,link in enumerate(self.starting_url):
+        print('Currently crawling {0}->{1}'.format(i,link))
+        self._crawl(link,depth)
+    else:
+      self._crawl(starting_url,depth)  
 
 
 if __name__=='__main__':
 
   logging.basicConfig(logging.DEBUG)
   crawler=Crawler()
-  crawler('arnab')
+  crawler(starting_url="https://www.indiatoday.in/")
+  
